@@ -12,3 +12,8 @@
   font-family: monospace;
   font-size: 30px;
 }
+.header-btns{
+  width: fit-content;
+  display: flex;
+  
+}
