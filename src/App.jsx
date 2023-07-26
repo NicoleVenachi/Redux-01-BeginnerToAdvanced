@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import Notificstion from "./components/Notificstion";
 import { uiActions } from "./store/ui-slice";
+import { sendCartData } from "./store/cart-slice";
 
 let isFirstRender = true
 
@@ -18,6 +19,7 @@ function App() {
 
   //manejo logica de cart desde redux, lo tomo y lo actualizo en el server
   //1era forma de hacer http request, con useEffect
+  //2da, con thunks
   const cart = useSelector(state => state.cart)
 
   useEffect(() => {
@@ -29,42 +31,9 @@ function App() {
       return
     }
 
-    //peticiones manejos los errores, y notifiquemos cuando se update el estado
-    //envio esado a la vez que peticion
-    dispatch(uiActions.showNotification({
-      open: true,
-      message: 'sending request',
-      type: 'warning'
-    }))
-    const sendRequest = async () => {
-      const res = await fetch(import.meta.env.VITE_REACT_APP_FIREBASE_REALTIMEDB_URL + 'cartItems.json', {
-        method: 'PUT',
-        body: JSON.stringify(cart)
-      })
+    dispatch(sendCartData(cart))
 
-      //respuesta positiva, me devulve la data
-      const data = await res.json()
-
-
-    }
-    sendRequest()
-      .then(() => {
-        //mando estado a la notification, si es succesfull
-        dispatch(uiActions.showNotification({
-          open: true,
-          message: 'request sent to DB succesfully',
-          type: 'success'
-        }))
-      })
-      .catch((err) => {
-
-        dispatch(uiActions.showNotification({
-          open: true,
-          message: 'sending request failed',
-          type: 'error'
-        }))
-      })
-  }, [cart])
+  }, [cart, dispatch])
 
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn)
 
