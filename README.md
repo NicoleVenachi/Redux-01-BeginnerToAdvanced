@@ -1,3 +1,7 @@
+# You can test it from:  
+
+https://redux-01-beginner-to-advanced-mqhk6ad6t-nicolevenachi.vercel.app/
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
