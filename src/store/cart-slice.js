@@ -41,8 +41,23 @@ const cartSlice = createSlice({
       
     },
     removeFromCart(state, action) {
-      //saco el item tomado
-      const newItem = action.payload;
+      //saco el id del item tomado
+      const itemId = action.payload;
+
+      //filtro el elemento
+      const existingItem = state.itemsList.find(item => item.id === itemId)
+
+      if(existingItem.quantity === 1){
+        //si solo hay uno, lo quito, y disminuyo la cantidad total del carrito
+        state.itemsList= state.itemsList.filter(item=> item.id !== itemId)
+        state.totalQuantity--;
+      }
+      else
+      {
+        //disminuyo la cantidad y precio total
+        existingItem.quantity--;
+        existingItem.totalPrice -= existingItem.price
+      }
     },
     setShowCart(state) {
       state.showCart = !state.showCart

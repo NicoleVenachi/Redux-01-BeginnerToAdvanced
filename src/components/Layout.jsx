@@ -8,7 +8,13 @@ import { useSelector } from "react-redux";
 
 const Layout = () => {
   const showCart = useSelector(state => state.cart.showCart)
-  let total = 100;
+
+  //logica total price, lo inicio en 0, y le sumo el total de cada item
+  let total = 0;
+  const itemsList = useSelector(state => state.cart.itemsList)
+  itemsList.forEach(item => {
+    total += item.totalPrice
+  });
 
   return (
     <React.Fragment>
