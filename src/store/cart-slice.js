@@ -1,5 +1,4 @@
 import {createSlice} from '@reduxjs/toolkit'
-import { uiActions } from './ui-slice';
 
 //creoSlice para auth
 const cartSlice = createSlice({
@@ -7,10 +6,19 @@ const cartSlice = createSlice({
   initialState: {
     itemsList: [],
     totalQuantity: 0,
-    showCart: false
+    showCart: false,
+    changed: false//estoe s para que una vez hecho el primer fetch de la data, no se enviíe la data de nuevo a la BD, al detectar cambios en el estado
+    //i.e., con este param, le digo que rrescriba data en DB. Sino está en true, no reescribe.
   },
   reducers: {
+    replaceData(state, action) {
+      //funcion para mostar el carrito en caso de que haya algo en la DB
+      state.totalQuantity = action.payload.totalQuantity
+      state.itemsList = action.payload.itemsList
+    },
     addToCart(state, action) {
+      state.changed = true
+
       //action payload sera la data del item
       const newItem = action.payload;
       
@@ -42,6 +50,8 @@ const cartSlice = createSlice({
       
     },
     removeFromCart(state, action) {
+      state.changed = true
+
       //saco el id del item tomado
       const itemId = action.payload;
 
@@ -66,47 +76,7 @@ const cartSlice = createSlice({
   }
 })
 
-//creo thunk, para parte asincrona
-export const sendCartData = (cart) =>{
-  return async (dispatch) =>{
 
-    //peticiones manejos los errores, y notifiquemos cuando se update el estado
-    //envio esado a la vez que peticion
-    dispatch(uiActions.showNotification({
-      open: true,
-      message: 'sending request',
-      type: 'warning'
-    }))
-    const sendRequest = async () => {
-      const res = await fetch(import.meta.env.VITE_REACT_APP_FIREBASE_REALTIMEDB_URL + 'cartItems.json', {
-        method: 'PUT',
-        body: JSON.stringify(cart)
-      })
-
-      //respuesta positiva, me devulve la data
-      const data = await res.json()
-    }
-
-    sendRequest()
-      .then(() => {
-        //mando estado a la notification, si es succesfull
-        dispatch(uiActions.showNotification({
-          open: true,
-          message: 'request sent to DB succesfully',
-          type: 'success'
-        }))
-      })
-      .catch(() => {
-
-        dispatch(uiActions.showNotification({
-          open: true,
-          message: 'sending request failed',
-          type: 'error'
-        }))
-      })
-      
-  }
-}
 //exporto sus actions
 export const cartActions = cartSlice.actions
 
